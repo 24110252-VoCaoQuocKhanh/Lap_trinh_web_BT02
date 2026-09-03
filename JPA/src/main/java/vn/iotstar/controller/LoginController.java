@@ -21,7 +21,8 @@ public class LoginController extends HttpServlet {
                 }
             }
         }
-        req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+        resp.setContentType("text/html; charset=UTF-8");
+        req.getRequestDispatcher("/views/login.jsp").include(req, resp);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class LoginController extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/category");
         } else {
             req.setAttribute("error", "Sai tài khoản hoặc mật khẩu!");
-            req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/login.jsp").include(req, resp);
         }
     }
 }

@@ -17,14 +17,17 @@ public class CategoryController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String path = req.getServletPath();
+    	req.setCharacterEncoding("UTF-8");
+    	resp.setCharacterEncoding("UTF-8");
+    	resp.setContentType("text/html; charset=UTF-8");
+    	String path = req.getServletPath();
 
         if (path.equals("/admin/category/add")) {
-            req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/add-category.jsp").include(req, resp);
         } else if (path.equals("/admin/category/edit")) {
             int id = Integer.parseInt(req.getParameter("id"));
             req.setAttribute("category", categoryDao.findById(id));
-            req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/edit-category.jsp").include(req, resp);
         } else if (path.equals("/admin/category/delete")) {
             int id = Integer.parseInt(req.getParameter("id"));
             categoryDao.delete(id);
@@ -32,13 +35,16 @@ public class CategoryController extends HttpServlet {
         } else {
             List<Category> list = categoryDao.findAll();
             req.setAttribute("cateList", list);
-            req.getRequestDispatcher("/views/admin/list-category.jsp").forward(req, resp);
+            req.getRequestDispatcher("/views/admin/list-category.jsp").include(req, resp);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
+    	req.setCharacterEncoding("UTF-8");
+    	resp.setCharacterEncoding("UTF-8");
+    	resp.setContentType("text/html; charset=UTF-8");
+
         String path = req.getServletPath();
 
         Category category = new Category();

@@ -11,8 +11,9 @@ public class SiteMesh extends ConfigurableSiteMeshFilter {
     
     @Override
     protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
-        builder.addDecoratorPath("/admin/*", "/views/decorators/admin.jsp")
+        builder.addDecoratorPath("/admin/*", "/admin.jsp")
                .addExcludedPath("/login")
+               .addExcludedPath("/register")
                .addExcludedPath("/image*");
     }
 }
