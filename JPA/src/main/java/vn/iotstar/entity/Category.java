@@ -1,22 +1,33 @@
 package vn.iotstar.entity;
 
+import java.io.Serializable;
+import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "categories")
-public class Category {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class Category implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
-    @Column(columnDefinition = "NVARCHAR(255)")
+    @Column(columnDefinition = "NVARCHAR(255)", nullable = false)
     private String name;
-    
-    private String icon;
 
+    private String icon;
     
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products;
+
     public Category() {}
 
-    // Tự viết Get/Set thay cho Lombok
+    public Category(String name, String icon) {
+        this.name = name;
+        this.icon = icon;
+    }
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     
@@ -25,4 +36,7 @@ public class Category {
     
     public String getIcon() { return icon; }
     public void setIcon(String icon) { this.icon = icon; }
+
+    public List<Product> getProducts() { return products; }
+    public void setProducts(List<Product> products) { this.products = products; }
 }
