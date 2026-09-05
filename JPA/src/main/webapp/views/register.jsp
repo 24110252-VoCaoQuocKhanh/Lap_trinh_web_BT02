@@ -53,31 +53,58 @@
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/register'/>" method="post">
+                    <form action="<c:url value='/register'/>" method="post" class="needs-validation" novalidate id="registerForm">
                         <div class="mb-3">
                             <label class="form-label fw-medium small">Tên tài khoản (Username) <span class="text-danger">*</span></label>
-                            <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập..." required value="${param.username}">
+                            <div class="input-group has-validation">
+                                <input type="text" name="username" class="form-control" placeholder="Tên đăng nhập..." required 
+                                       value="${param.username}" pattern="^[a-zA-Z0-9_]{3,30}$" minlength="3" maxlength="30">
+                                <div class="invalid-feedback">
+                                    Tên đăng nhập từ 3-30 ký tự (chỉ gồm chữ cái, số và dấu gạch dưới).
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-medium small">Họ và tên <span class="text-danger">*</span></label>
-                            <input type="text" name="fullname" class="form-control" placeholder="Họ và tên của bạn..." required value="${param.fullname}">
+                            <div class="input-group has-validation">
+                                <input type="text" name="fullname" class="form-control" placeholder="Họ và tên của bạn..." required 
+                                       value="${param.fullname}" minlength="2" maxlength="100">
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập họ và tên (tối thiểu 2 ký tự).
+                                </div>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-medium small">Địa chỉ Email (Nhận mã OTP) <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control" placeholder="example@gmail.com" required value="${param.email}">
+                            <div class="input-group has-validation">
+                                <input type="email" name="email" class="form-control" placeholder="example@gmail.com" required value="${param.email}">
+                                <div class="invalid-feedback">
+                                    Địa chỉ email không đúng định dạng.
+                                </div>
+                            </div>
                             <div class="form-text text-muted" style="font-size: 11px;">Mã OTP xác thực sẽ được gửi trực tiếp đến hộp thư này.</div>
                         </div>
 
                         <div class="row g-2 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-medium small">Mật khẩu <span class="text-danger">*</span></label>
-                                <input type="password" name="password" class="form-control" placeholder="Tối thiểu 6 ký tự" required>
+                                <div class="input-group has-validation">
+                                    <input type="password" id="regPassword" name="password" class="form-control" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+                                    <div class="invalid-feedback">
+                                        Mật khẩu tối thiểu 6 ký tự.
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-medium small">Xác nhận mật khẩu <span class="text-danger">*</span></label>
-                                <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" required>
+                                <div class="input-group has-validation">
+                                    <input type="password" id="regConfirmPassword" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" required minlength="6">
+                                    <div class="invalid-feedback" id="confirmFeedback">
+                                        Vui lòng xác nhận lại mật khẩu.
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -99,5 +126,41 @@
             </div>
         </div>
     </div>
+
+    <script>
+    (function () {
+      'use strict'
+      var form = document.getElementById('registerForm')
+      var pwd = document.getElementById('regPassword')
+      var cpwd = document.getElementById('regConfirmPassword')
+      var confirmFeedback = document.getElementById('confirmFeedback')
+
+      form.addEventListener('submit', function (event) {
+        var isValid = form.checkValidity()
+        if (pwd.value !== cpwd.value) {
+          cpwd.setCustomValidity('Mật khẩu xác nhận không khớp.')
+          confirmFeedback.textContent = 'Mật khẩu xác nhận không khớp với mật khẩu đã nhập!'
+          isValid = false
+        } else {
+          cpwd.setCustomValidity('')
+        }
+
+        if (!isValid) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+        form.classList.add('was-validated')
+      }, false)
+
+      cpwd.addEventListener('input', function () {
+        if (pwd.value !== cpwd.value) {
+          cpwd.setCustomValidity('Mật khẩu xác nhận không khớp.')
+          confirmFeedback.textContent = 'Mật khẩu xác nhận không khớp!'
+        } else {
+          cpwd.setCustomValidity('')
+        }
+      })
+    })()
+    </script>
 </body>
 </html>

@@ -1,24 +1,35 @@
 package vn.iotstar.filter;
 
+import jakarta.servlet.annotation.WebFilter;
 import org.sitemesh.builder.SiteMeshFilterBuilder;
 import org.sitemesh.config.ConfigurableSiteMeshFilter;
+import org.sitemesh.webapp.DispatchMode;
 
-/**
- * SiteMesh Filter đã được vô hiệu hóa (@WebFilter đã tắt).
- * 
- * LÝ DO: Trên Apache Tomcat 11 (Jakarta EE 11 / Servlet 6.1), cơ chế I/O mới (ByteBuffer)
- * và tối ưu hóa Coyote connector khiến SiteMesh 3 gặp lỗi không flush được response wrapper,
- * dẫn đến hiện tượng TRẮNG MÀN HÌNH (HTTP 200 - Content-Length: 0).
- * 
- * Toàn bộ hệ thống giao diện (Web & Admin) đã được chuyển đổi sang cơ chế chuẩn <jsp:include>
- * (/views/web/header.jsp, /views/admin/header.jsp, ...), giúp ứng dụng tương thích 100% với Tomcat 11,
- * tốc độ tải trang cực nhanh và không bao giờ bị lỗi trắng màn hình.
- */
-// @WebFilter(filterName = "sitemesh", urlPatterns = "/*")
+@WebFilter(filterName = "sitemesh", urlPatterns = "/*")
 public class SiteMesh extends ConfigurableSiteMeshFilter {
     
     @Override
     protected void applyCustomConfiguration(SiteMeshFilterBuilder builder) {
-        // Không dùng decorator của sitemesh để tránh xung đột trên Tomcat 11
+        // Cấu hình chế độ dispatch INCLUDE tương thích với Tomcat 11 để không bị commit response gây trắng trang
+        try {
+            builder.setDispatchMode(DispatchMode.INCLUDE);
+        } catch (Throwable ignored) {
+            // Trường hợp phiên bản sitemesh cấu hình dispatch mode qua sitemesh3.xml
+        }
+
+        // Ánh xạ Decorator Bootstrap (SiteMesh 3 có sẵn prefix là /WEB-INF/decorators/)
+        builder.addDecoratorPath("/admin/*", "admin.jsp")
+               .addDecoratorPath("/*", "web.jsp")
+               // Bỏ qua Decorator cho các trang xác thực độc lập & binary upload
+               .addExcludedPath("/login*")
+               .addExcludedPath("/register*")
+               .addExcludedPath("/forgot-password*")
+               .addExcludedPath("/verify-otp*")
+               .addExcludedPath("/reset-password*")
+               .addExcludedPath("/logout*")
+               .addExcludedPath("/image*")
+               .addExcludedPath("/assets/*")
+               .addExcludedPath("/static/*")
+               .addExcludedPath("/WEB-INF/*");
     }
 }

@@ -74,12 +74,37 @@ public class ProfileController extends HttpServlet {
         if (fullname != null) fullname = fullname.trim();
         if (phone != null) phone = phone.trim();
 
+        // Server-side validation
+        if (fullname == null || fullname.isEmpty() || fullname.length() < 2) {
+            req.setAttribute("error", "Họ và tên không được để trống và phải có ít nhất 2 ký tự!");
+            req.getRequestDispatcher(isAdminPath ? "/views/admin/profile.jsp" : "/views/web/profile.jsp").forward(req, resp);
+            return;
+        }
+
+        if (phone != null && !phone.isEmpty() && !phone.matches("^(0[3|5|7|8|9])[0-9]{8}$")) {
+            req.setAttribute("error", "Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Việt Nam gồm 10 chữ số (bắt đầu bằng 03, 05, 07, 08, 09).");
+            req.getRequestDispatcher(isAdminPath ? "/views/admin/profile.jsp" : "/views/web/profile.jsp").forward(req, resp);
+            return;
+        }
+
         String imageFileName = null;
         try {
             Part filePart = req.getPart("images");
             if (filePart != null && filePart.getSize() > 0) {
+                if (filePart.getSize() > 5 * 1024 * 1024) {
+                    req.setAttribute("error", "Kích thước ảnh đại diện không được vượt quá 5MB!");
+                    req.getRequestDispatcher(isAdminPath ? "/views/admin/profile.jsp" : "/views/web/profile.jsp").forward(req, resp);
+                    return;
+                }
+
                 String originalName = filePart.getSubmittedFileName();
-                String ext = (originalName != null && originalName.contains(".")) ? originalName.substring(originalName.lastIndexOf(".")) : ".jpg";
+                String ext = (originalName != null && originalName.contains(".")) ? originalName.substring(originalName.lastIndexOf(".")).toLowerCase() : ".jpg";
+                if (!ext.equals(".jpg") && !ext.equals(".jpeg") && !ext.equals(".png") && !ext.equals(".webp") && !ext.equals(".gif")) {
+                    req.setAttribute("error", "Định dạng file không hợp lệ! Chỉ chấp nhận file ảnh .jpg, .jpeg, .png, .webp, .gif.");
+                    req.getRequestDispatcher(isAdminPath ? "/views/admin/profile.jsp" : "/views/web/profile.jsp").forward(req, resp);
+                    return;
+                }
+
                 String fileName = "user_" + System.currentTimeMillis() + ext;
                 
                 File uploadDir = new File(Constant.DIR + "/user");

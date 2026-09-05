@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:set var="pageTitle" value="Trang chủ - Device Store" scope="request"/>
-<jsp:include page="/views/web/header.jsp"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trang chủ - Device Store</title>
+</head>
+<body>
 
     <!-- Hero Banner (Mệnh Thổ Palette) -->
     <div class="container mb-4">
@@ -167,4 +171,5 @@
         </div>
     </div>
 
-<jsp:include page="/views/web/footer.jsp"/>
+</body>
+</html>

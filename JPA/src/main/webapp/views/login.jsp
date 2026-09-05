@@ -63,25 +63,31 @@
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/login'/>" method="post">
+                    <form action="<c:url value='/login'/>" method="post" class="needs-validation" novalidate id="loginForm">
                         <div class="mb-3">
-                            <label class="form-label fw-medium small">Tài khoản</label>
-                            <div class="input-group">
+                            <label class="form-label fw-medium small">Tài khoản <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
-                                <input type="text" name="username" class="form-control border-start-0 ps-0" 
-                                       placeholder="Nhập tên đăng nhập" value="${savedUser}" required>
+                                <input type="text" name="username" class="form-control border-start-0 ps-2" 
+                                       placeholder="Nhập tên đăng nhập hoặc email" value="${savedUser}" required minlength="3">
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập tên đăng nhập hoặc email (tối thiểu 3 ký tự).
+                                </div>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <label class="form-label fw-medium small mb-0">Mật khẩu</label>
+                                <label class="form-label fw-medium small mb-0">Mật khẩu <span class="text-danger">*</span></label>
                                 <a href="<c:url value='/forgot-password'/>" class="text-decoration-none small text-earth fw-medium">Quên mật khẩu?</a>
                             </div>
-                            <div class="input-group mt-1">
+                            <div class="input-group has-validation mt-1">
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
-                                <input type="password" name="password" class="form-control border-start-0 ps-0" 
-                                       placeholder="Nhập mật khẩu" required>
+                                <input type="password" name="password" class="form-control border-start-0 ps-2" 
+                                       placeholder="Nhập mật khẩu" required minlength="3">
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập mật khẩu.
+                                </div>
                             </div>
                         </div>
 
@@ -110,5 +116,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+    (function () {
+      'use strict'
+      var forms = document.querySelectorAll('.needs-validation')
+      Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+    </script>
 </body>
 </html>

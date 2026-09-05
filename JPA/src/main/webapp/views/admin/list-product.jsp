@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:set var="pageTitle" value="Quản lý Sản phẩm - Device Store Admin" scope="request"/>
-<jsp:include page="/views/admin/header.jsp"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản lý Sản phẩm - Device Store Admin</title>
+</head>
+<body>
 
     <div class="card shadow-sm border-0 mb-4 rounded-3">
         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
@@ -90,4 +94,5 @@
         </div>
     </div>
 
-<jsp:include page="/views/admin/footer.jsp"/>
+</body>
+</html>

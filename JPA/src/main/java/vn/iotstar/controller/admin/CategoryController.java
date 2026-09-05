@@ -68,16 +68,64 @@ public class CategoryController extends HttpServlet {
         resp.setContentType("text/html; charset=UTF-8");
 
         String path = req.getServletPath();
+        String name = req.getParameter("name");
+        if (name != null) name = name.trim();
+
+        if (name == null || name.length() < 2 || name.length() > 200) {
+            req.setAttribute("error", "Tên danh mục không được để trống và phải có độ dài từ 2 đến 200 ký tự!");
+            if (path.equals("/admin/category/add") || path.equals("/admin/category/insert")) {
+                req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+            } else {
+                int id = Integer.parseInt(req.getParameter("id"));
+                Category cate = categoryService.findById(id);
+                req.setAttribute("category", cate);
+                req.setAttribute("cate", cate);
+                req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+            }
+            return;
+        }
 
         Category category = new Category();
-        category.setName(req.getParameter("name"));
+        category.setName(name);
 
         Part filePart = req.getPart("icon");
         String fileName = null;
         
         if (filePart != null && filePart.getSize() > 0) {
+            if (filePart.getSize() > 5 * 1024 * 1024) {
+                req.setAttribute("error", "Kích thước file biểu tượng không được vượt quá 5MB!");
+                if (path.equals("/admin/category/add") || path.equals("/admin/category/insert")) {
+                    req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+                } else {
+                    int id = Integer.parseInt(req.getParameter("id"));
+                    Category cate = categoryService.findById(id);
+                    req.setAttribute("category", cate);
+                    req.setAttribute("cate", cate);
+                    req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+                }
+                return;
+            }
+
             String originalName = filePart.getSubmittedFileName();
-            fileName = System.currentTimeMillis() + "." + originalName.substring(originalName.lastIndexOf(".") + 1);
+            String ext = "";
+            if (originalName != null && originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
+            }
+            if (!ext.equals(".jpg") && !ext.equals(".jpeg") && !ext.equals(".png") && !ext.equals(".webp") && !ext.equals(".svg")) {
+                req.setAttribute("error", "Định dạng file không hợp lệ! Chỉ chấp nhận .jpg, .jpeg, .png, .webp, .svg.");
+                if (path.equals("/admin/category/add") || path.equals("/admin/category/insert")) {
+                    req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+                } else {
+                    int id = Integer.parseInt(req.getParameter("id"));
+                    Category cate = categoryService.findById(id);
+                    req.setAttribute("category", cate);
+                    req.setAttribute("cate", cate);
+                    req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+                }
+                return;
+            }
+
+            fileName = System.currentTimeMillis() + ext;
             File uploadDir = new File(Constant.DIR + "/category");
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();

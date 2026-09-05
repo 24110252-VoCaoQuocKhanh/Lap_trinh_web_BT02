@@ -42,6 +42,27 @@ public class RegisterController extends HttpServlet {
             return;
         }
 
+        username = username.trim();
+        email = email.trim();
+
+        if (!username.matches("^[a-zA-Z0-9_]{3,30}$")) {
+            req.setAttribute("error", "Tên đăng nhập chỉ chứa chữ cái, chữ số, dấu gạch dưới và có độ dài từ 3 đến 30 ký tự!");
+            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            return;
+        }
+
+        if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            req.setAttribute("error", "Định dạng email không hợp lệ!");
+            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            return;
+        }
+
+        if (password.length() < 6) {
+            req.setAttribute("error", "Mật khẩu phải có độ dài ít nhất 6 ký tự!");
+            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            return;
+        }
+
         if (!password.equals(confirmPassword)) {
             req.setAttribute("error", "Mật khẩu xác nhận không khớp!");
             req.getRequestDispatcher("/views/register.jsp").forward(req, resp);

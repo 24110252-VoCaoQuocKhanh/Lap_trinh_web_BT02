@@ -55,13 +55,16 @@
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/forgot-password'/>" method="post" class="text-start">
+                    <form action="<c:url value='/forgot-password'/>" method="post" class="text-start needs-validation" novalidate id="forgotForm">
                         <div class="mb-3">
-                            <label class="form-label fw-medium small">Email đăng ký tài khoản</label>
-                            <div class="input-group">
+                            <label class="form-label fw-medium small">Email đăng ký tài khoản <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
                                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                                <input type="email" name="email" class="form-control border-start-0 ps-0" 
+                                <input type="email" name="email" class="form-control border-start-0 ps-2" 
                                        placeholder="example@gmail.com" required value="${param.email}">
+                                <div class="invalid-feedback">
+                                    Vui lòng nhập địa chỉ email hợp lệ.
+                                </div>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-earth w-100 py-2 fw-semibold shadow-sm mb-3">
@@ -81,5 +84,21 @@
             </div>
         </div>
     </div>
+
+    <script>
+    (function () {
+      'use strict'
+      var forms = document.querySelectorAll('.needs-validation')
+      Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+    </script>
 </body>
 </html>

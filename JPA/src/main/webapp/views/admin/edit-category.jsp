@@ -1,8 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<c:set var="pageTitle" value="Cập Nhật Danh Mục - Device Store Admin" scope="request"/>
-<jsp:include page="/views/admin/header.jsp"/>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cập Nhật Danh Mục - Device Store Admin</title>
+</head>
+<body>
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm border-0 rounded-3">
@@ -10,12 +13,24 @@
                     <h5 class="mb-0 text-dark"><i class="bi bi-pencil-square me-2"></i> Cập Nhật Thông Tin Danh Mục</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form action="<c:url value='/admin/category/update'/>" method="post" enctype="multipart/form-data">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> ${error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <form action="<c:url value='/admin/category/update'/>" method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="editCategoryForm">
                         <input type="hidden" name="id" value="${cate.id}">
                         
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tên danh mục <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" value="${cate.name}" required>
+                            <div class="input-group has-validation">
+                                <input type="text" name="name" class="form-control" value="${cate.name}" minlength="2" maxlength="200" required>
+                                <div class="invalid-feedback">
+                                    Tên danh mục không được để trống (tối thiểu 2 ký tự, tối đa 200 ký tự).
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="mb-4">
@@ -31,7 +46,8 @@
                                 </c:choose>
                             </div>
                             <label class="form-label text-muted small mt-2">Chọn ảnh mới (nếu muốn thay đổi):</label>
-                            <input type="file" name="icon" class="form-control" accept="image/*">
+                            <input type="file" name="icon" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp, image/svg+xml">
+                            <div class="form-text text-muted">Hỗ trợ các file ảnh .png, .jpg, .webp, .svg (&le; 5MB)</div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 border-top pt-3">
@@ -48,4 +64,20 @@
         </div>
     </div>
 
-<jsp:include page="/views/admin/footer.jsp"/>
+    <script>
+    (function () {
+      'use strict'
+      var forms = document.querySelectorAll('.needs-validation')
+      Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+    </script>
+</body>
+</html>

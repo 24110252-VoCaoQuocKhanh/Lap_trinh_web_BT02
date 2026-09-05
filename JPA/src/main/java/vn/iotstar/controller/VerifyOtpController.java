@@ -42,7 +42,13 @@ public class VerifyOtpController extends HttpServlet {
             return;
         }
 
-        boolean success = userService.verifyOtp(email.trim(), enteredOtp != null ? enteredOtp.trim() : "");
+        if (enteredOtp == null || !enteredOtp.trim().matches("^[0-9]{6}$")) {
+            req.setAttribute("error", "Vui lòng nhập chính xác mã OTP gồm 6 chữ số!");
+            req.getRequestDispatcher("/views/verify-otp.jsp").forward(req, resp);
+            return;
+        }
+
+        boolean success = userService.verifyOtp(email.trim(), enteredOtp.trim());
 
         if (success) {
             session.removeAttribute("verifyEmail");

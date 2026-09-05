@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:set var="pageTitle" value="${product.name} - Chi Tiết Thiết Bị" scope="request"/>
-<jsp:include page="/views/web/header.jsp"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${product.name} - Chi Tiết Thiết Bị</title>
+</head>
+<body>
     <div class="container my-4">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
@@ -137,4 +141,5 @@
             </div>
         </c:if>
     </div>
-<jsp:include page="/views/web/footer.jsp"/>
+</body>
+</html>

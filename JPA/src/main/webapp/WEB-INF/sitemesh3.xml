@@ -1,3 +1,25 @@
-<!-- sitemesh3.xml is disabled since native JSP includes are used -->
 <sitemesh>
+    <!-- Thiết lập chế độ dispatch include để tương thích với Tomcat 11, ngăn ngừa trắng trang -->
+    <dispatch-mode>include</dispatch-mode>
+
+    <!-- Thư mục chứa decorator mặc định của SiteMesh 3 -->
+    <decorator-prefix>/WEB-INF/decorators/</decorator-prefix>
+
+    <!-- Decorator Quản trị Admin: /WEB-INF/decorators/admin.jsp -->
+    <mapping path="/admin/*" decorator="admin.jsp"/>
+    
+    <!-- Decorator Web Người Dùng / Khách Hàng: /WEB-INF/decorators/web.jsp -->
+    <mapping path="/*" decorator="web.jsp"/>
+    
+    <!-- Loại trừ các trang xác thực độc lập & binary upload & internal -->
+    <mapping path="/login*" exclude="true"/>
+    <mapping path="/register*" exclude="true"/>
+    <mapping path="/forgot-password*" exclude="true"/>
+    <mapping path="/verify-otp*" exclude="true"/>
+    <mapping path="/reset-password*" exclude="true"/>
+    <mapping path="/logout*" exclude="true"/>
+    <mapping path="/image*" exclude="true"/>
+    <mapping path="/assets/*" exclude="true"/>
+    <mapping path="/static/*" exclude="true"/>
+    <mapping path="/WEB-INF/*" exclude="true"/>
 </sitemesh>

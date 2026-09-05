@@ -62,12 +62,15 @@
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/verify-otp'/>" method="post">
+                    <form action="<c:url value='/verify-otp'/>" method="post" class="needs-validation" novalidate>
                         <input type="hidden" name="email" value="${not empty sessionScope.verifyEmail ? sessionScope.verifyEmail : param.email}">
                         <div class="mb-4">
                             <label class="form-label fw-semibold small text-muted">Nhập mã OTP (6 chữ số):</label>
                             <input type="text" name="otp" class="form-control text-center otp-input" 
-                                   maxlength="6" placeholder="------" autofocus required>
+                                   pattern="[0-9]{6}" inputmode="numeric" maxlength="6" placeholder="------" autofocus required>
+                            <div class="invalid-feedback text-start">
+                                Vui lòng nhập chính xác mã OTP gồm 6 chữ số!
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-earth w-100 py-2 fw-semibold shadow-sm mb-3">
                             <i class="bi bi-check-circle me-1"></i> Kích Hoạt Tài Khoản
@@ -86,5 +89,22 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (() => {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
+    </script>
 </body>
 </html>

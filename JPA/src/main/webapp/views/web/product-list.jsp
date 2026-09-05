@@ -1,8 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:set var="pageTitle" value="Kho Thiết Bị - Device Store" scope="request"/>
-<jsp:include page="/views/web/header.jsp"/>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kho Thiết Bị - Device Store</title>
+</head>
+<body>
     <div class="container my-3">
         <!-- Breadcrumb & Header -->
         <nav aria-label="breadcrumb" class="mb-3">
@@ -181,4 +185,5 @@
             </div>
         </div>
     </div>
-<jsp:include page="/views/web/footer.jsp"/>
+</body>
+</html>

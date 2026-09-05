@@ -85,6 +85,8 @@ public class ProductController extends HttpServlet {
         String path = req.getServletPath();
 
         String name = req.getParameter("name");
+        if (name != null) name = name.trim();
+
         String description = req.getParameter("description");
         double price = 0;
         try {
@@ -92,15 +94,51 @@ public class ProductController extends HttpServlet {
         } catch (Exception e) {
             price = 0;
         }
-        int categoryId = Integer.parseInt(req.getParameter("categoryId"));
-        Category category = categoryService.findById(categoryId);
+
+        int categoryId = 0;
+        try {
+            categoryId = Integer.parseInt(req.getParameter("categoryId"));
+        } catch (Exception e) {
+            categoryId = 0;
+        }
+        Category category = (categoryId > 0) ? categoryService.findById(categoryId) : null;
+
+        // Server-side validation
+        if (name == null || name.length() < 2 || name.length() > 255) {
+            forwardError(req, resp, path, "Tên thiết bị / sản phẩm không được để trống (từ 2 đến 255 ký tự)!");
+            return;
+        }
+
+        if (price < 1000) {
+            forwardError(req, resp, path, "Giá sản phẩm không hợp lệ! Đơn giá tối thiểu là 1,000 VNĐ.");
+            return;
+        }
+
+        if (category == null) {
+            forwardError(req, resp, path, "Vui lòng chọn danh mục hợp lệ cho sản phẩm!");
+            return;
+        }
 
         // Xử lý upload hình ảnh sản phẩm
         Part filePart = req.getPart("image");
         String fileName = null;
         if (filePart != null && filePart.getSize() > 0) {
+            if (filePart.getSize() > 5 * 1024 * 1024) {
+                forwardError(req, resp, path, "Kích thước hình ảnh không được vượt quá 5MB!");
+                return;
+            }
+
             String originalName = filePart.getSubmittedFileName();
-            fileName = "product_" + System.currentTimeMillis() + "." + originalName.substring(originalName.lastIndexOf(".") + 1);
+            String ext = "";
+            if (originalName != null && originalName.contains(".")) {
+                ext = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
+            }
+            if (!ext.equals(".jpg") && !ext.equals(".jpeg") && !ext.equals(".png") && !ext.equals(".webp") && !ext.equals(".gif")) {
+                forwardError(req, resp, path, "Định dạng file không hợp lệ! Chỉ chấp nhận ảnh .jpg, .jpeg, .png, .webp, .gif.");
+                return;
+            }
+
+            fileName = "product_" + System.currentTimeMillis() + ext;
             File uploadDir = new File(Constant.DIR + "/product");
             if (!uploadDir.exists()) uploadDir.mkdirs();
             filePart.write(Constant.DIR + "/product/" + fileName);
@@ -139,5 +177,21 @@ public class ProductController extends HttpServlet {
         }
 
         resp.sendRedirect(req.getContextPath() + "/admin/product");
+    }
+
+    private void forwardError(HttpServletRequest req, HttpServletResponse resp, String path, String errorMsg) throws ServletException, IOException {
+        req.setAttribute("error", errorMsg);
+        List<Category> categories = categoryService.findAll();
+        req.setAttribute("categories", categories);
+        if ("/admin/product/edit".equals(path)) {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                Product product = productService.findById(id);
+                req.setAttribute("product", product);
+            } catch (Exception ignored) {}
+            req.getRequestDispatcher("/views/admin/edit-product.jsp").forward(req, resp);
+        } else {
+            req.getRequestDispatcher("/views/admin/add-product.jsp").forward(req, resp);
+        }
     }
 }

@@ -45,11 +45,18 @@ public class ForgotPasswordController extends HttpServlet {
                 return;
             }
 
+            email = email.trim();
+            if (!email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+                req.setAttribute("error", "Định dạng email không hợp lệ!");
+                req.getRequestDispatcher("/views/forgot-password.jsp").forward(req, resp);
+                return;
+            }
+
             try {
-                boolean sent = userService.sendForgotPasswordOtp(email.trim());
+                boolean sent = userService.sendForgotPasswordOtp(email);
                 if (sent) {
                     HttpSession session = req.getSession();
-                    session.setAttribute("resetEmail", email.trim());
+                    session.setAttribute("resetEmail", email);
                     resp.sendRedirect(req.getContextPath() + "/reset-password");
                 } else {
                     req.setAttribute("error", "Email không tồn tại trong hệ thống Device Store!");
@@ -76,6 +83,19 @@ public class ForgotPasswordController extends HttpServlet {
             if (enteredOtp == null || newPassword == null || confirmPassword == null ||
                 enteredOtp.trim().isEmpty() || newPassword.trim().isEmpty()) {
                 req.setAttribute("error", "Vui lòng nhập đầy đủ thông tin!");
+                req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
+                return;
+            }
+
+            enteredOtp = enteredOtp.trim();
+            if (!enteredOtp.matches("^[0-9]{6}$")) {
+                req.setAttribute("error", "Mã OTP phải gồm 6 chữ số!");
+                req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
+                return;
+            }
+
+            if (newPassword.length() < 6) {
+                req.setAttribute("error", "Mật khẩu mới phải có ít nhất 6 ký tự!");
                 req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
                 return;
             }

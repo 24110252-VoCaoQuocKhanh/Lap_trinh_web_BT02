@@ -1,8 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<c:set var="pageTitle" value="Thông Tin Cá Nhân - Device Store" scope="request"/>
-<jsp:include page="/views/web/header.jsp"/>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thông Tin Cá Nhân - Device Store</title>
+</head>
+<body>
 <div class="container py-4">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
@@ -29,15 +32,15 @@
                         </div>
                     </c:if>
 
-                    <c:if test="${param.error == 1}">
+                    <c:if test="${param.error == 1 || not empty error}">
                         <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
                             <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
-                            <div>Cập nhật thất bại. Vui lòng thử lại sau!</div>
+                            <div>${not empty error ? error : 'Cập nhật thất bại. Vui lòng kiểm tra lại thông tin!'}</div>
                             <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/profile'/>" method="post" enctype="multipart/form-data">
+                    <form action="<c:url value='/profile'/>" method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="profileUserForm">
                         <!-- Avatar Display & Upload -->
                         <div class="text-center mb-4">
                             <div class="position-relative d-inline-block">
@@ -51,7 +54,9 @@
                                 <label for="avatarUpload" class="form-label text-muted small fw-medium">
                                     <i class="bi bi-camera me-1"></i> Chọn ảnh đại diện mới
                                 </label>
-                                <input class="form-control form-control-sm mx-auto" style="max-width: 280px;" type="file" id="avatarUpload" name="images" accept="image/*" onchange="previewAvatarUser(this)">
+                                <input class="form-control form-control-sm mx-auto" style="max-width: 280px;" type="file" id="avatarUpload" name="images" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif" onchange="previewAvatarUser(this)">
+                                <div class="form-text small text-muted">Hỗ trợ JPG, PNG, WEBP, GIF (&le; 5MB)</div>
+                                <div id="avatarError" class="text-danger small mt-1 d-none">Kích thước file ảnh vượt quá 5MB. Vui lòng chọn ảnh khác!</div>
                             </div>
                         </div>
 
@@ -75,23 +80,30 @@
 
                         <!-- Full Name -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold small">Họ và tên</label>
-                            <div class="input-group">
+                            <label class="form-label fw-semibold small">Họ và tên <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-card-text text-primary"></i></span>
                                 <input type="text" name="fullname" class="form-control" 
                                        value="${sessionScope.account.fullname}" 
-                                       placeholder="Nhập họ và tên..." required>
+                                       placeholder="Nhập họ và tên..." minlength="2" maxlength="100" required>
+                                <div class="invalid-feedback">
+                                    Họ và tên không được để trống (tối thiểu 2 ký tự, tối đa 100 ký tự).
+                                </div>
                             </div>
                         </div>
 
                         <!-- Phone -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold small">Số điện thoại</label>
-                            <div class="input-group">
+                            <div class="input-group has-validation">
                                 <span class="input-group-text"><i class="bi bi-telephone text-primary"></i></span>
-                                <input type="text" name="phone" class="form-control" 
+                                <input type="tel" name="phone" class="form-control" 
                                        value="${sessionScope.account.phone}" 
-                                       placeholder="Nhập số điện thoại...">
+                                       placeholder="Ví dụ: 0901234567"
+                                       pattern="^(0[3|5|7|8|9])[0-9]{8}$">
+                                <div class="invalid-feedback">
+                                    Số điện thoại không hợp lệ (gồm 10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09).
+                                </div>
                             </div>
                         </div>
 
@@ -126,14 +138,38 @@
 
 <script>
 function previewAvatarUser(input) {
+    var errorDiv = document.getElementById('avatarError');
     if (input.files && input.files[0]) {
+        var file = input.files[0];
+        if (file.size > 5 * 1024 * 1024) {
+            errorDiv.classList.remove('d-none');
+            input.value = '';
+            return;
+        } else {
+            errorDiv.classList.add('d-none');
+        }
         var reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('avatarImgUser').src = e.target.result;
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
     }
 }
-</script>
 
-<jsp:include page="/views/web/footer.jsp"/>
+// Bootstrap 5 validation script
+(function () {
+  'use strict'
+  var forms = document.querySelectorAll('.needs-validation')
+  Array.prototype.slice.call(forms).forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>
+</body>
+</html>

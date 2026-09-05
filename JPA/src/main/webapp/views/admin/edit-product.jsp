@@ -1,9 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
-<c:set var="pageTitle" value="Cập Nhật Sản Phẩm - Device Store Admin" scope="request"/>
-<jsp:include page="/views/admin/header.jsp"/>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cập Nhật Sản Phẩm - Device Store Admin</title>
+</head>
+<body>
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-9">
             <div class="card shadow-sm border-0 rounded-3">
@@ -11,30 +14,50 @@
                     <h5 class="mb-0 text-dark"><i class="bi bi-pencil-square me-2"></i> Cập Nhật Thông Tin Thiết Bị</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form action="<c:url value='/admin/product/edit'/>" method="post" enctype="multipart/form-data">
+                    <c:if test="${not empty error}">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> ${error}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </c:if>
+
+                    <form action="<c:url value='/admin/product/edit'/>" method="post" enctype="multipart/form-data" class="needs-validation" novalidate id="editProductForm">
                         <input type="hidden" name="id" value="${product.id}">
 
                         <div class="mb-3">
                             <label class="form-label fw-bold">Tên thiết bị / sản phẩm <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" required value="${product.name}">
+                            <div class="input-group has-validation">
+                                <input type="text" name="name" class="form-control" value="${product.name}" minlength="2" maxlength="255" required>
+                                <div class="invalid-feedback">
+                                    Tên sản phẩm không được để trống (từ 2 đến 255 ký tự).
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Danh mục sản phẩm <span class="text-danger">*</span></label>
-                                <select name="categoryId" class="form-select" required>
-                                    <c:forEach items="${categories}" var="cat">
-                                        <option value="${cat.id}" ${product.category != null && product.category.id == cat.id ? 'selected' : ''}>
-                                            ${cat.name}
-                                        </option>
-                                    </c:forEach>
-                                </select>
+                                <div class="input-group has-validation">
+                                    <select name="categoryId" class="form-select" required>
+                                        <c:forEach items="${categories}" var="cat">
+                                            <option value="${cat.id}" ${product.category != null && product.category.id == cat.id ? 'selected' : ''}>
+                                                ${cat.name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Vui lòng chọn danh mục cho sản phẩm.
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Giá bán (VND) <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" name="price" class="form-control" required min="0" step="1000" value="${product.price}">
+                                <div class="input-group has-validation">
+                                    <input type="number" name="price" class="form-control" required min="1000" step="1000" value="${product.price}">
                                     <span class="input-group-text bg-light fw-bold">VNĐ</span>
+                                    <div class="invalid-feedback">
+                                        Giá bán phải từ 1,000 VNĐ trở lên.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -53,7 +76,8 @@
                                 </c:choose>
                             </div>
                             <label class="form-label text-muted small">Chọn ảnh mới (nếu muốn thay đổi):</label>
-                            <input type="file" name="image" class="form-control" accept="image/*">
+                            <input type="file" name="image" class="form-control" accept="image/png, image/jpeg, image/jpg, image/webp">
+                            <div class="form-text text-muted">Hỗ trợ các định dạng .jpg, .png, .jpeg, .webp (&le; 10MB)</div>
                         </div>
 
                         <div class="mb-4">
@@ -75,4 +99,20 @@
         </div>
     </div>
 
-<jsp:include page="/views/admin/footer.jsp"/>
+    <script>
+    (function () {
+      'use strict'
+      var forms = document.querySelectorAll('.needs-validation')
+      Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
+    </script>
+</body>
+</html>

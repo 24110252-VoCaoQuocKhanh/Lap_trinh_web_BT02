@@ -55,23 +55,32 @@
                         </div>
                     </c:if>
 
-                    <form action="<c:url value='/reset-password'/>" method="post">
+                    <form action="<c:url value='/reset-password'/>" method="post" class="needs-validation" novalidate id="resetPasswordForm">
                         <div class="mb-3">
                             <label class="form-label fw-medium small">Mã xác thực OTP (6 chữ số):</label>
                             <input type="text" name="otp" class="form-control text-center fs-5 fw-bold" 
-                                   maxlength="6" placeholder="Nhập mã OTP" required autofocus style="color: #6f4e37;">
+                                   pattern="[0-9]{6}" inputmode="numeric" maxlength="6" placeholder="------" required autofocus style="color: #6f4e37;">
+                            <div class="invalid-feedback">
+                                Vui lòng nhập đúng 6 chữ số OTP.
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label fw-medium small">Mật khẩu mới:</label>
-                            <input type="password" name="newPassword" class="form-control" 
-                                   placeholder="Mật khẩu mới" required>
+                            <input type="password" name="newPassword" id="newPassword" class="form-control" 
+                                   minlength="6" placeholder="Mật khẩu mới (tối thiểu 6 ký tự)" required>
+                            <div class="invalid-feedback">
+                                Mật khẩu mới phải có ít nhất 6 ký tự.
+                            </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-medium small">Xác nhận mật khẩu mới:</label>
-                            <input type="password" name="confirmPassword" class="form-control" 
-                                   placeholder="Nhập lại mật khẩu mới" required>
+                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" 
+                                   minlength="6" placeholder="Nhập lại mật khẩu mới" required>
+                            <div class="invalid-feedback" id="confirmFeedback">
+                                Vui lòng xác nhận mật khẩu mới.
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-earth w-100 py-2 fw-semibold shadow-sm mb-3">
@@ -88,5 +97,40 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (() => {
+            'use strict';
+            const form = document.getElementById('resetPasswordForm');
+            const pass = document.getElementById('newPassword');
+            const confirm = document.getElementById('confirmPassword');
+            const confirmFeedback = document.getElementById('confirmFeedback');
+
+            function validatePasswordMatch() {
+                if (confirm.value !== pass.value) {
+                    confirm.setCustomValidity('Passwords do not match');
+                    confirmFeedback.textContent = 'Mật khẩu xác nhận không khớp!';
+                } else {
+                    confirm.setCustomValidity('');
+                    confirmFeedback.textContent = 'Vui lòng xác nhận mật khẩu mới.';
+                }
+            }
+
+            pass.addEventListener('input', () => {
+                if (confirm.value) validatePasswordMatch();
+            });
+            confirm.addEventListener('input', validatePasswordMatch);
+
+            form.addEventListener('submit', event => {
+                validatePasswordMatch();
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
 </body>
 </html>

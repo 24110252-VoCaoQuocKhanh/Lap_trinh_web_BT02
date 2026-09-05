@@ -14,11 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --ds-primary: #0d6efd;
-            --ds-dark: #1e293b;
-            --ds-accent: #f59e0b;
-        }
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #f8fafc;
@@ -50,12 +45,64 @@
             box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
         }
         .price-tag {
-            color: #dc2626;
+            color: #8c4a2f;
             font-weight: 700;
             font-size: 1.15rem;
         }
-        .badge-brand {
-            background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+
+        /* Bảng Màu Phong Thủy Mệnh Thổ (Tone Nâu Đất & Vàng Nâu Pastel) */
+        :root {
+            --bs-primary: #6f4e37;
+            --bs-primary-rgb: 111, 78, 55;
+            --bs-link-color: #6f4e37;
+            --bs-link-hover-color: #533927;
+        }
+        .btn-primary, .btn-primary:active, .btn-primary:focus {
+            background-color: #6f4e37 !important;
+            border-color: #6f4e37 !important;
+            color: #ffffff !important;
+        }
+        .btn-primary:hover {
+            background-color: #533927 !important;
+            border-color: #533927 !important;
+            color: #ffffff !important;
+        }
+        .btn-outline-primary {
+            color: #6f4e37 !important;
+            border-color: #6f4e37 !important;
+        }
+        .btn-outline-primary:hover, .btn-outline-primary:active, .btn-outline-primary:focus {
+            background-color: #6f4e37 !important;
+            border-color: #6f4e37 !important;
+            color: #ffffff !important;
+        }
+        .bg-primary {
+            background-color: #6f4e37 !important;
+        }
+        .text-primary, a.text-primary, .nav-link.text-primary {
+            color: #6f4e37 !important;
+        }
+        .badge.bg-primary {
+            background-color: #6f4e37 !important;
+        }
+        .page-item.active .page-link {
+            background-color: #6f4e37 !important;
+            border-color: #6f4e37 !important;
+            color: #ffffff !important;
+        }
+        .page-link {
+            color: #6f4e37 !important;
+        }
+        .page-link:hover {
+            color: #533927 !important;
+            background-color: #f5ebe0 !important;
+        }
+        .breadcrumb-item a {
+            color: #6f4e37 !important;
+        }
+        .list-group-item.bg-primary {
+            background-color: #6f4e37 !important;
+            border-color: #6f4e37 !important;
         }
     </style>
     <sitemesh:write property='head'/>
@@ -105,21 +152,27 @@
                                 <div class="dropdown">
                                     <button class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center" 
                                             type="button" data-bs-toggle="dropdown">
-                                        <i class="bi bi-person-circle me-2"></i>
-                                        <span>${not empty sessionScope.account.fullname ? sessionScope.account.fullname : sessionScope.account.username}</span>
+                                        <img src="${not empty sessionScope.account.images ? pageContext.request.contextPath.concat('/image?fname=').concat(sessionScope.account.images) : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}" 
+                                             class="rounded-circle me-2 border border-secondary shadow-sm" style="width: 28px; height: 28px; object-fit: cover;" alt="Avatar">
+                                        <span>Xin chào, <strong>${not empty sessionScope.account.fullname ? sessionScope.account.fullname : sessionScope.account.username}</strong></span>
                                         <c:if test="${sessionScope.account.role == 1}">
                                             <span class="badge bg-danger ms-2">Admin</span>
                                         </c:if>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                        <li>
+                                            <a class="dropdown-item" href="<c:url value='/profile'/>">
+                                                <i class="bi bi-person-badge me-2 text-primary"></i> Thông tin cá nhân
+                                            </a>
+                                        </li>
                                         <c:if test="${sessionScope.account.role == 1}">
                                             <li>
                                                 <a class="dropdown-item fw-bold text-primary" href="<c:url value='/admin/product'/>">
                                                     <i class="bi bi-speedometer2 me-2"></i> Trang quản trị Admin
                                                 </a>
                                             </li>
-                                            <li><hr class="dropdown-divider"></li>
                                         </c:if>
+                                        <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <a class="dropdown-item text-danger" href="<c:url value='/logout'/>">
                                                 <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
